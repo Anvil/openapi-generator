@@ -152,7 +152,8 @@ declare -A body_parameters
 
 ##
 # These arguments will be directly passed to cURL
-curl_arguments="{{x-codegen-curl-options}}"
+declare -a curl_arguments
+read -a curl_arguments <<<"{{x-codegen-curl-options}}"
 
 ##
 # The host for making the request
@@ -823,9 +824,9 @@ call_{{operationId}}() {
     #
     if [[ -n $body_content_temp_file ]]; then
         if [[ "$print_curl" = true ]]; then
-            echo "cat ${body_content_temp_file} | curl ${basic_auth_option} ${curl_arguments} ${headers_curl} -X ${method} \"${host}${path}\" -d @-"
+            echo "cat ${body_content_temp_file} | curl ${basic_auth_option} \"${curl_arguments[@]}\" ${headers_curl} -X ${method} \"${host}${path}\" -d @-"
         else
-            eval "cat ${body_content_temp_file} | curl ${basic_auth_option} ${curl_arguments} ${headers_curl} -X ${method} \"${host}${path}\" -d @-"
+            eval "cat ${body_content_temp_file} | curl ${basic_auth_option} \"${curl_arguments[@]}\" ${headers_curl} -X ${method} \"${host}${path}\" -d @-"
         fi
         rm "${body_content_temp_file}"
     #
@@ -834,17 +835,17 @@ call_{{operationId}}() {
     else
         body_json_curl=$(body_parameters_to_json)
         if [[ "$print_curl" = true ]]; then
-            echo "curl ${basic_auth_option} ${curl_arguments} ${headers_curl} -X ${method} ${body_json_curl} \"${host}${path}\""
+            echo "curl ${basic_auth_option} \"${curl_arguments[@]}\" ${headers_curl} -X ${method} ${body_json_curl} \"${host}${path}\""
         else
-            eval "curl ${basic_auth_option} ${curl_arguments} ${headers_curl} -X ${method} ${body_json_curl} \"${host}${path}\""
+            eval "curl ${basic_auth_option} \"${curl_arguments[@]}\" ${headers_curl} -X ${method} ${body_json_curl} \"${host}${path}\""
         fi
     fi
 {{/hasBodyParam}}
 {{^hasBodyParam}}
     if [[ "$print_curl" = true ]]; then
-        echo "curl ${basic_auth_option} ${curl_arguments} ${headers_curl} -X ${method} \"${host}${path}\""
+        echo "curl ${basic_auth_option} \"${curl_arguments[@]}\" ${headers_curl} -X ${method} \"${host}${path}\""
     else
-        eval "curl ${basic_auth_option} ${curl_arguments} ${headers_curl} -X ${method} \"${host}${path}\""
+        eval "curl ${basic_auth_option} \"${curl_arguments[@]}\" ${headers_curl} -X ${method} \"${host}${path}\""
     fi
 {{/hasBodyParam}}
 }
@@ -1001,7 +1002,7 @@ case $key in
 {{/hasAuthMethods}}
         header_arguments[$header_name]=$header_value
     else
-        curl_arguments+=" $key"
+        curl_arguments+=("$key")
     fi
     ;;
     -)
@@ -1019,19 +1020,14 @@ case $key in
             operation_parameters[$parameter_name]+=":::"$(url_escape "${parameter_value}")
         fi
     else
-        curl_arguments+=" $key"
+        curl_arguments+=("$key")
     fi
     ;;
     *)
     # If we are before the operation, treat the arguments as cURL arguments
     if [[ "x$operation" == "x" ]]; then
         # Maintain quotes around cURL arguments if necessary
-        space_regexp="[[:space:]]"
-        if [[ $key =~ $space_regexp ]]; then
-            curl_arguments+=" \"$key\""
-        else
-            curl_arguments+=" $key"
-        fi
+        curl_arguments+=("$key")
     fi
     ;;
 esac

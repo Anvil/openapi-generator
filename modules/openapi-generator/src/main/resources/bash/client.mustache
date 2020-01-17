@@ -821,9 +821,9 @@ call_{{operationId}}() {
     #
     if [[ -n $body_content_temp_file ]]; then
         if [[ "$print_curl" = true ]]; then
-            echo "cat ${body_content_temp_file} | curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\" -d @-"
+            echo "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\" -d @${body_content_temp_file}"
         else
-            eval "cat ${body_content_temp_file} | curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\" -d @-"
+            eval "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\" -d @${body_content_temp_file}"
         fi
         rm "${body_content_temp_file}"
     #

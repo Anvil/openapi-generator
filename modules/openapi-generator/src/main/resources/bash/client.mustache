@@ -823,7 +823,7 @@ call_{{operationId}}() {
         if [[ "$print_curl" = true ]]; then
             echo "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\" -d @${body_content_temp_file}"
         else
-            eval "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\" -d @${body_content_temp_file}"
+            curl "${basic_auth_option[@]}" "${curl_arguments[@]}" "${headers_curl[@]}" -X "${method}" "${host}${path}" -d "@${body_content_temp_file}"
         fi
         rm "${body_content_temp_file}"
     #
@@ -834,7 +834,7 @@ call_{{operationId}}() {
         if [[ "$print_curl" = true ]]; then
             echo "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} ${body_json_curl} \"${host}${path}\""
         else
-            eval "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} ${body_json_curl} \"${host}${path}\""
+	    curl "${basic_auth_option[@]}" "${curl_arguments[@]}" "${headers_curl[@]}" -X "${method}" "${body_json_curl}" "${host}${path}"
         fi
     fi
 {{/hasBodyParam}}
@@ -842,7 +842,7 @@ call_{{operationId}}() {
     if [[ "$print_curl" = true ]]; then
         echo "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\""
     else
-        eval "curl \"${basic_auth_option[@]}\" \"${curl_arguments[@]}\" \"${headers_curl[@]}\" -X ${method} \"${host}${path}\""
+	curl "${basic_auth_option[@]}" "${curl_arguments[@]}" "${headers_curl[@]}" -X "${method}" "${host}${path}"
     fi
 {{/hasBodyParam}}
 }
